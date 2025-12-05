@@ -1,104 +1,161 @@
 # 日常记录网站 - 后端服务
 
-## 技术栈
+Node.js + Express + MySQL 后端 API 服务
 
-- Node.js
-- Express.js
-- MySQL
-- Multer (文件上传)
+## 🚀 快速开始
 
-## 安装依赖
+### 本地开发
 
+1. **安装依赖**
 ```bash
-cd backend
 npm install
 ```
 
-## 数据库配置
+2. **配置环境变量**
+```bash
+# 复制 .env.example 为 .env
+cp .env.example .env
 
-1. 确保已安装MySQL数据库
+# 编辑 .env 文件，配置数据库信息
+```
 
-2. 执行数据库初始化脚本:
+3. **初始化数据库**
 ```bash
 mysql -u root -p < database/init.sql
 ```
 
-3. 复制环境配置文件:
-```bash
-cp .env.example .env
-```
-
-4. 编辑 `.env` 文件,配置数据库连接信息:
-```
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=你的密码
-DB_NAME=daily_records
-PORT=3000
-```
-
-## 启动服务
-
-开发模式(支持热重载):
+4. **启动开发服务器**
 ```bash
 npm run dev
 ```
 
-生产模式:
-```bash
-npm start
-```
+服务将运行在 http://localhost:3000
 
-服务器将运行在 `http://localhost:3000`
+## 📦 生产部署
 
-## API接口
+### Render 部署
 
-### 记录管理
+详见 [Render部署指南.md](../Render部署指南.md)
 
-- `GET /api/records` - 获取记录列表
-  - 参数: page(页码), pageSize(每页数量)
-  
-- `GET /api/records/:id` - 获取记录详情
-  
-- `POST /api/records` - 创建新记录
-  - Body: { title, content }
-  
-- `PUT /api/records/:id` - 更新记录
-  - Body: { title, content }
-  
-- `DELETE /api/records/:id` - 删除记录
+简要步骤：
+1. 准备云数据库（PlanetScale 或 Railway）
+2. 推送代码到 GitHub
+3. 在 Render 创建 Web Service
+4. 配置环境变量
+5. 自动部署
 
-### 文件上传
-
-- `POST /api/upload` - 上传文件
-  - Form Data: file
+## 🔌 API 接口
 
 ### 健康检查
+```
+GET /api/health
+```
 
-- `GET /api/health` - 服务健康检查
+### 记录管理
+```
+GET    /api/records          # 获取记录列表
+GET    /api/records/:id      # 获取记录详情
+POST   /api/records          # 创建记录
+PUT    /api/records/:id      # 更新记录
+DELETE /api/records/:id      # 删除记录
+```
 
-## 目录结构
+### 文件上传
+```
+POST   /api/upload           # 上传文件
+```
+
+## 🛠️ 技术栈
+
+- **Node.js** 18+
+- **Express** 4.x
+- **MySQL** 5.7+
+- **Multer** - 文件上传
+- **CORS** - 跨域支持
+- **dotenv** - 环境变量管理
+
+## 📁 项目结构
 
 ```
 backend/
-├── database/          # 数据库脚本
-│   └── init.sql      # 初始化SQL
 ├── src/
-│   ├── config/       # 配置文件
-│   │   └── database.js
-│   ├── dao/          # 数据访问层
+│   ├── app.js           # 应用入口
+│   ├── config/          # 配置文件
+│   │   └── database.js  # 数据库配置
+│   ├── dao/             # 数据访问层
 │   │   └── recordDao.js
-│   ├── services/     # 业务逻辑层
+│   ├── services/        # 业务逻辑层
 │   │   └── recordService.js
-│   ├── routes/       # 路由控制器
-│   │   ├── records.js
-│   │   └── upload.js
-│   ├── utils/        # 工具函数
-│   │   └── recordUtils.js
-│   └── app.js        # 应用入口
-├── uploads/          # 文件上传目录
-├── .env              # 环境配置
-├── .env.example      # 环境配置示例
-└── package.json
+│   └── routes/          # 路由层
+│       ├── records.js
+│       └── upload.js
+├── database/            # 数据库脚本
+│   └── init.sql
+├── uploads/             # 文件上传目录（本地）
+├── .env                 # 环境变量（不提交到git）
+├── .env.example         # 环境变量示例
+├── .gitignore
+├── package.json
+└── render.yaml          # Render 部署配置
 ```
+
+## 🔐 环境变量
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `NODE_ENV` | 运行环境 | development |
+| `PORT` | 服务端口 | 3000 |
+| `DB_HOST` | 数据库地址 | localhost |
+| `DB_PORT` | 数据库端口 | 3306 |
+| `DB_USER` | 数据库用户名 | root |
+| `DB_PASSWORD` | 数据库密码 | - |
+| `DB_NAME` | 数据库名称 | daily_records |
+| `UPLOAD_DIR` | 文件上传目录 | uploads |
+| `MAX_FILE_SIZE` | 最大文件大小 | 52428800 (50MB) |
+
+## 📝 开发规范
+
+### 数据库表结构
+
+**records 表**
+- `id` - 主键，自增
+- `title` - 标题
+- `content` - 富文本内容
+- `category` - 分类（daily/travel/study/food/work/life）
+- `created_at` - 创建时间
+- `updated_at` - 更新时间
+- `is_deleted` - 软删除标记
+
+### 分类系统
+
+支持 6 个分类：
+- `daily` - 日常
+- `travel` - 游记
+- `study` - 学习
+- `food` - 美食
+- `work` - 工作
+- `life` - 生活
+
+## 🐛 问题排查
+
+### 数据库连接失败
+```bash
+# 检查 MySQL 是否运行
+mysql -u root -p -e "SELECT 1"
+
+# 检查环境变量配置
+cat .env
+```
+
+### 文件上传失败
+```bash
+# 检查 uploads 目录权限
+ls -la uploads/
+
+# 创建目录
+mkdir -p uploads
+```
+
+## 📄 License
+
+MIT

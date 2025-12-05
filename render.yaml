@@ -1,0 +1,29 @@
+services:
+  # Web 服务 - Node.js 后端
+  - type: web
+    name: daily-records-api
+    env: node
+    region: singapore  # 或选择 oregon, frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: daily_records
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: MAX_FILE_SIZE
+        value: 52428800
+    
+  # MySQL 数据库（需要付费套餐，或使用外部数据库）
+  # 免费版建议使用 PlanetScale 或 Railway 的免费 MySQL
